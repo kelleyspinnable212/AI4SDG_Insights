@@ -153,16 +153,15 @@ World Bank charts work without a key. Only **AI Insight** needs `GEMINI_API_KEY`
 
 ## Screenshots
 
-Add screenshots here after running the app:
 
 | View | Description |
 |------|-------------|
-| `docs/dashboard_light.png` | Main dashboard — KPI cards + trend chart (light mode) |
+| <img width="1421" height="862" alt="image" src="https://github.com/user-attachments/assets/580a1867-205d-42cd-a6ec-a77f80e264e7" />
+| Main dashboard — KPI cards + trend chart (light mode) |
 | `docs/comparison.png` | Pakistan / India / Bangladesh comparison |
 | `docs/ai_insight.png` | Gemini policy brief panel |
 | `docs/dark_mode.png` | Dark mode theme |
 
-*(Create a `docs/` folder and capture screenshots from your local run for portfolio use.)*
 
 ---
 
@@ -223,8 +222,4 @@ All time series are fetched from the [World Bank Open Data API](https://data.wor
 
 AI4SDG Insights is an **educational / portfolio** application. It is **not** an official United Nations or UNDP product. AI-generated text is illustrative and must be validated against official statistics and national planning frameworks before any policy use.
 
----
 
-## License
-
-MIT — feel free to adapt for learning and portfolio showcases.
