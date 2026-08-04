@@ -134,6 +134,23 @@ The app opens in your browser (typically `http://localhost:8501`).
 
 ---
 
+## Free deployment (Streamlit Community Cloud)
+
+1. Push this repo to **GitHub** (public).
+2. Open [share.streamlit.io](https://share.streamlit.io/) and sign in with GitHub.
+3. **New app** → select this repository → Main file path: `app.py` → Deploy.
+4. In **App settings → Secrets**, paste:
+
+```toml
+GEMINI_API_KEY = "your-actual-api-key"
+```
+
+5. Save — the live URL will look like `https://<you>-ai4sdg-insights.streamlit.app`.
+
+World Bank charts work without a key. Only **AI Insight** needs `GEMINI_API_KEY`.
+
+---
+
 ## Screenshots
 
 Add screenshots here after running the app:

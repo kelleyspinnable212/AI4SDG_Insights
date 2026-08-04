@@ -327,16 +327,52 @@ def compute_data_quality(
     }
 
 
+# Soft bounds so linear scenarios do not print impossible values (e.g. 105% access).
+INDICATOR_VALUE_BOUNDS: Dict[str, tuple[Optional[float], Optional[float]]] = {
+    "Internet Users": (0.0, 100.0),
+    "Unemployment": (0.0, 100.0),
+    "Access to Electricity": (0.0, 100.0),
+    "Primary School Enrollment": (0.0, 150.0),  # gross enrollment can exceed 100
+    "Life Expectancy": (20.0, 100.0),
+    "Population": (0.0, None),
+    "GDP": (0.0, None),
+    "CO₂ Emissions": (0.0, None),
+}
+
+
+def _clamp_series(
+    values: np.ndarray,
+    lo: Optional[float],
+    hi: Optional[float],
+) -> tuple[np.ndarray, bool]:
+    """Clamp array to [lo, hi]; return (clamped, whether any value changed)."""
+    out = values.astype(float).copy()
+    capped = False
+    if lo is not None:
+        mask = out < lo
+        if mask.any():
+            out[mask] = lo
+            capped = True
+    if hi is not None:
+        mask = out > hi
+        if mask.any():
+            out[mask] = hi
+            capped = True
+    return out, capped
+
+
 def project_to_2030(
     df: pd.DataFrame,
     growth_adjustment_pct: float = 0.0,
     target_year: int = 2030,
+    indicator_name: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Project indicator values to a target year under baseline and adjusted paths.
 
     growth_adjustment_pct shifts the implied annual growth rate
     (e.g. -20 means 20% slower than the historical linear trend).
+    Percentage-style indicators are clamped to plausible bounds.
     """
     empty = {
         "baseline_df": pd.DataFrame(columns=["Year", "Value"]),
@@ -347,6 +383,7 @@ def project_to_2030(
         "latest_year": None,
         "r_squared": None,
         "implied_annual_change": None,
+        "was_capped": False,
         "note": "Insufficient history for a 2030 projection.",
     }
 
@@ -387,26 +424,45 @@ def project_to_2030(
     for _ in future_years:
         cursor = cursor + adjusted_annual
         adjusted_vals.append(cursor)
+    adjusted_arr = np.array(adjusted_vals, dtype=float)
+
+    lo, hi = INDICATOR_VALUE_BOUNDS.get(indicator_name or "", (None, None))
+    baseline_vals, capped_b = _clamp_series(baseline_vals, lo, hi)
+    adjusted_arr, capped_a = _clamp_series(adjusted_arr, lo, hi)
+    was_capped = capped_b or capped_a
 
     baseline_df = pd.DataFrame({"Year": future_years.astype(int), "Value": baseline_vals})
     adjusted_df = pd.DataFrame(
-        {"Year": future_years.astype(int), "Value": np.array(adjusted_vals, dtype=float)}
+        {"Year": future_years.astype(int), "Value": adjusted_arr}
     )
+
+    note = (
+        "Illustrative linear scenario only — not a forecast commitment. "
+        "Structural breaks, policy shifts, and shocks are not modelled."
+    )
+    if was_capped:
+        bound_txt = []
+        if lo is not None:
+            bound_txt.append(str(lo))
+        if hi is not None:
+            bound_txt.append(str(hi))
+        note += (
+            f" Values were capped to a plausible range ({'–'.join(bound_txt)}) "
+            "so the path does not exceed natural limits (e.g. 100% access)."
+        )
 
     return {
         "baseline_df": baseline_df,
         "adjusted_df": adjusted_df,
         "baseline_2030": float(baseline_vals[-1]),
-        "adjusted_2030": float(adjusted_vals[-1]),
+        "adjusted_2030": float(adjusted_arr[-1]),
         "latest_value": latest_value,
         "latest_year": latest_year,
         "r_squared": r_squared,
         "implied_annual_change": annual_change,
         "adjusted_annual_change": adjusted_annual,
-        "note": (
-            "Illustrative linear scenario only — not a forecast commitment. "
-            "Structural breaks, policy shifts, and shocks are not modelled."
-        ),
+        "was_capped": was_capped,
+        "note": note,
     }
 
 
@@ -488,6 +544,22 @@ def compute_equity_gap(
     }
 
 
+def _briefing_direction_phrase(indicator: str, growth: Optional[float]) -> str:
+    """Neutral / polarity-aware wording (never call rising unemployment 'improving')."""
+    if growth is None or (isinstance(growth, float) and pd.isna(growth)):
+        return "direction unclear from YoY change"
+    lower_better = indicator in LOWER_IS_BETTER
+    if abs(growth) < 0.5:
+        return "broadly stable versus the prior year"
+    if growth > 0:
+        if lower_better:
+            return "rising — a concern for this indicator"
+        return "rising versus the prior year"
+    if lower_better:
+        return "falling — a favourable direction for this indicator"
+    return "falling versus the prior year"
+
+
 def build_country_office_briefing(
     country: str,
     indicator: str,
@@ -508,12 +580,12 @@ def build_country_office_briefing(
     latest = format_number(stats.get("latest_value"))
     year = stats.get("latest_year", "N/A")
     growth = format_percent(stats.get("growth_pct"))
-    trend = stats.get("trend", "Insufficient data")
+    direction = _briefing_direction_phrase(indicator, stats.get("growth_pct"))
     unit_bit = f" {unit}" if unit else ""
 
     situation = (
         f"In {year}, {country}'s {indicator.lower()} stood at {latest}{unit_bit}, "
-        f"with year-over-year change of {growth} ({trend})."
+        f"with a year-over-year change of {growth} ({direction})."
     )
 
     drivers = (
@@ -536,9 +608,11 @@ def build_country_office_briefing(
             + " Disparities may warrant leave-no-one-behind targeting."
         )
     elif quality:
+        coverage = quality.get("coverage_pct")
+        coverage_txt = f"{coverage:.0f}%" if isinstance(coverage, (int, float)) else "N/A"
         risk = (
             f"Data quality is labelled {quality.get('quality_label', 'N/A')} "
-            f"({quality.get('coverage_pct', 0):.0f}% coverage; "
+            f"({coverage_txt} coverage; "
             f"{quality.get('staleness_label', 'N/A')}). "
             "Gaps and national averages can hide excluded groups."
         )
@@ -549,11 +623,16 @@ def build_country_office_briefing(
         )
 
     if scenario and scenario.get("baseline_2030") is not None:
+        cap_note = (
+            " Path values are bounded to a plausible range for this indicator."
+            if scenario.get("was_capped")
+            else ""
+        )
         ask = (
             f"For planning discussions: a linear baseline path points to about "
             f"{format_number(scenario.get('baseline_2030'))}{unit_bit} by 2030 "
-            f"(adjusted path: {format_number(scenario.get('adjusted_2030'))}{unit_bit}). "
-            "Treat as illustrative only and stress-test against policy shifts."
+            f"(adjusted path: {format_number(scenario.get('adjusted_2030'))}{unit_bit})."
+            f"{cap_note} Treat as illustrative only and stress-test against policy shifts."
         )
     else:
         ask = (

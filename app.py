@@ -232,7 +232,7 @@ def render_context_strip(country: str, indicator: str, quality: dict, unit: str)
 
 
 def render_country_office_briefing(briefing: dict) -> None:
-    """Render four-card country office briefing."""
+    """Render four-card country office briefing (Streamlit columns = reliable layout)."""
     import html as html_lib
 
     st.markdown(
@@ -243,16 +243,21 @@ def render_country_office_briefing(briefing: dict) -> None:
         "Deterministic 4-bullet brief from verified World Bank stats — "
         "no generative AI. Useful for interview demos."
     )
-    cards = "".join(
-        f"""
-        <div class="briefing-card">
-            <div class="briefing-label">{html_lib.escape(label)}</div>
-            <p class="briefing-text">{html_lib.escape(text)}</p>
-        </div>
-        """
-        for label, text in briefing.items()
-    )
-    st.markdown(f'<div class="briefing-grid">{cards}</div>', unsafe_allow_html=True)
+    items = list(briefing.items())
+    # 2x2 grid via columns — avoids Streamlit HTML sanitizer stripping card CSS
+    for row_start in range(0, len(items), 2):
+        cols = st.columns(2)
+        for col, (label, text) in zip(cols, items[row_start : row_start + 2]):
+            with col:
+                st.markdown(
+                    f"""
+                    <div class="briefing-card">
+                        <div class="briefing-label">{html_lib.escape(label)}</div>
+                        <p class="briefing-text">{html_lib.escape(text)}</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
 
 def render_sdg_badge(indicator: str) -> None:
@@ -450,7 +455,11 @@ def render_scenario_section(
         "*“what if progress slows/accelerates?”* Not an official projection."
     )
 
-    scenario = project_to_2030(df, growth_adjustment_pct=float(growth_adj))
+    scenario = project_to_2030(
+        df,
+        growth_adjustment_pct=float(growth_adj),
+        indicator_name=indicator,
+    )
     if scenario.get("baseline_2030") is None and scenario.get("latest_year") is None:
         st.info(scenario.get("note", "Insufficient data for a 2030 scenario."))
         return scenario
