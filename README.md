@@ -156,11 +156,10 @@ World Bank charts work without a key. Only **AI Insight** needs `GEMINI_API_KEY`
 
 | View | Description |
 |------|-------------|
-| <img width="1421" height="862" alt="image" src="https://github.com/user-attachments/assets/580a1867-205d-42cd-a6ec-a77f80e264e7" />
-| Main dashboard — KPI cards + trend chart (light mode) |
-| `docs/comparison.png` | Pakistan / India / Bangladesh comparison |
-| `docs/ai_insight.png` | Gemini policy brief panel |
-| `docs/dark_mode.png` | Dark mode theme |
+| <img width="1421" height="862" alt="image" src="https://github.com/user-attachments/assets/580a1867-205d-42cd-a6ec-a77f80e264e7" /> | Main dashboard — KPI cards + trend chart (light mode) |
+| <img width="1296" height="688" alt="image" src="https://github.com/user-attachments/assets/5e4d6173-ca48-4e86-adc1-2b215411a6b5" /> | Pakistan / India / Bangladesh comparison |
+| <img width="1368" height="920" alt="image" src="https://github.com/user-attachments/assets/93c94136-3f97-4d63-850c-84ad6c7e918b" /> | Gemini policy brief panel |
+| <img width="1827" height="805" alt="image" src="https://github.com/user-attachments/assets/8dc930c9-ddd4-4001-bacc-5439e7257c96" /> | Dark mode theme |
 
 
 ---
