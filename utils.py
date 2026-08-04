@@ -90,15 +90,31 @@ def format_percent(value: Optional[float], decimals: int = 2) -> str:
     return f"{sign}{value:.{decimals}f}%"
 
 
-def trend_label(growth: Optional[float], threshold: float = 0.5) -> str:
-    """Map growth percentage to a human-readable trend label."""
+def trend_label(
+    growth: Optional[float],
+    threshold: float = 0.5,
+    polarity: str = "higher",
+) -> str:
+    """
+    Map growth percentage to a human-readable trend label.
+
+    polarity:
+      - "higher": rising is generally favourable (e.g. electricity access)
+      - "lower": rising is a concern (e.g. unemployment, CO₂)
+      - "neutral": direction only (e.g. population)
+    """
     if growth is None or (isinstance(growth, float) and pd.isna(growth)):
         return "Insufficient data"
-    if growth > threshold:
-        return "⬆ Improving / Rising"
-    if growth < -threshold:
-        return "⬇ Declining"
-    return "➡ Stable"
+    if abs(growth) <= threshold:
+        return "➡ Stable"
+
+    rising = growth > threshold
+    if polarity == "lower":
+        return "⬆ Rising (watch)" if rising else "⬇ Falling (favourable)"
+    if polarity == "neutral":
+        return "⬆ Rising" if rising else "⬇ Falling"
+    # higher is better
+    return "⬆ Rising / Improving" if rising else "⬇ Declining"
 
 
 def inject_custom_css(dark_mode: bool = False, accent: str | None = None) -> str:

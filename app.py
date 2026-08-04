@@ -761,7 +761,7 @@ def main() -> None:
     if error:
         st.warning(error)
 
-    stats = compute_statistics(df)
+    stats = compute_statistics(df, indicator_name=indicator)
     risk = compute_sdg_risk_score(df, indicator, stats)
     st.session_state.last_risk_score = risk.get("risk_score")
     quality = compute_data_quality(

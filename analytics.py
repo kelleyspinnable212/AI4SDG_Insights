@@ -15,7 +15,27 @@ from sklearn.linear_model import LinearRegression
 from utils import trend_label
 
 
-def compute_statistics(df: pd.DataFrame) -> Dict[str, Any]:
+# Indicators where a decrease is generally desirable for development outcomes
+LOWER_IS_BETTER = {"Unemployment", "CO₂ Emissions"}
+# Indicators where direction alone is reported (no improving/worsening label)
+NEUTRAL_DIRECTION = {"Population"}
+
+
+def _trend_polarity(indicator_name: Optional[str]) -> str:
+    """Return trend polarity: higher | lower | neutral."""
+    if not indicator_name:
+        return "higher"
+    if indicator_name in LOWER_IS_BETTER:
+        return "lower"
+    if indicator_name in NEUTRAL_DIRECTION:
+        return "neutral"
+    return "higher"
+
+
+def compute_statistics(
+    df: pd.DataFrame,
+    indicator_name: Optional[str] = None,
+) -> Dict[str, Any]:
     """
     Compute core analytics for an indicator time series.
 
@@ -68,7 +88,7 @@ def compute_statistics(df: pd.DataFrame) -> Dict[str, Any]:
         "latest_year": latest_year,
         "previous_year": previous_year,
         "growth_pct": growth_pct,
-        "trend": trend_label(growth_pct),
+        "trend": trend_label(growth_pct, polarity=_trend_polarity(indicator_name)),
         "average": float(values.mean()),
         "minimum": float(values.min()),
         "maximum": float(values.max()),
@@ -113,10 +133,6 @@ def forecast_linear(
         }
     )
     return forecast_df, r_squared
-
-
-# Indicators where a decrease is generally desirable for development outcomes
-LOWER_IS_BETTER = {"Unemployment", "CO₂ Emissions"}
 
 
 def compute_sdg_risk_score(

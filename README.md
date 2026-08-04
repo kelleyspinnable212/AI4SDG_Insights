@@ -2,6 +2,13 @@
 
 **AI-powered Sustainable Development Analytics Platform**
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://hijabf-ai4sdg-insights-app-ak34e9.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Live app:** [https://hijabf-ai4sdg-insights-app-ak34e9.streamlit.app/](https://hijabf-ai4sdg-insights-app-ak34e9.streamlit.app/)
+
 A production-quality Streamlit dashboard that combines **World Bank Open Data** with **Google Gemini AI** to explore development indicators, compare countries, and generate cautious UNDP-style policy insights.
 
 Designed as a polished portfolio project with a professional UN / UNDP visual language — blue-and-white palette, card layouts, and modular architecture.
@@ -27,7 +34,7 @@ AI4SDG Insights helps analysts and students:
 |------|----------------|
 | **Data** | Live World Bank API, 1-hour cache, missing-value cleaning, graceful failure handling |
 | **Indicators** | Population, GDP, Life Expectancy, Internet Users, Unemployment, CO₂ Emissions, Access to Electricity, Primary School Enrollment |
-| **Analytics** | Latest value, YoY growth, trend, average / min / max, overall growth |
+| **Analytics** | Latest value, YoY growth, polarity-aware trend, average / min / max, overall growth |
 | **Visuals** | Interactive Plotly charts (hover, zoom, pan, image download), multi-country comparison |
 | **SDG Mapping** | Dedicated module linking indicators to SDG number, title, description, and icon |
 | **AI Insights** | Gemini policy analyst prompt; quota-aware error handling; ~180-word briefs |
@@ -36,7 +43,7 @@ AI4SDG Insights helps analysts and students:
 | **Export** | CSV + SDG Progress Note PDF (limitations, equity, 2030 scenario, AI notes) |
 | **Equity (LNOB)** | Urban–rural / gender disaggregation where World Bank series exist |
 | **Data integrity** | Coverage %, missing years, freshness, “what this cannot tell us” |
-| **2030 scenarios** | Baseline vs adjusted growth paths to Agenda 2030 |
+| **2030 scenarios** | Bounded baseline vs adjusted growth paths to Agenda 2030 |
 | **UX** | Wide layout, dark/light mode, sidebar search, toasts, spinners, footer |
 
 ---
@@ -52,6 +59,7 @@ AI4SDG_Insights/
 ├── sdg_mapping.py         # Indicator ↔ SDG metadata
 ├── utils.py               # Theming, charts, PDF/CSV helpers
 ├── requirements.txt
+├── LICENSE
 ├── README.md
 └── .streamlit/
     └── secrets.toml.example
@@ -65,12 +73,7 @@ AI4SDG_Insights/
 - Internet access for World Bank API and Gemini
 - A Google AI Studio / Gemini API key (for AI insights)
 
-Python packages are listed in `requirements.txt`:
-
-- streamlit, pandas, numpy, plotly, requests
-- google-generativeai
-- scikit-learn
-- reportlab, kaleido (PDF + static chart export)
+Python packages are listed in `requirements.txt`.
 
 ---
 
@@ -134,18 +137,20 @@ The app opens in your browser (typically `http://localhost:8501`).
 
 ---
 
-## Free deployment (Streamlit Community Cloud)
+## Deployment
 
-1. Push this repo to **GitHub** (public).
-2. Open [share.streamlit.io](https://share.streamlit.io/) and sign in with GitHub.
-3. **New app** → select this repository → Main file path: `app.py` → Deploy.
-4. In **App settings → Secrets**, paste:
+**Already live on Streamlit Community Cloud:**  
+[https://hijabf-ai4sdg-insights-app-ak34e9.streamlit.app/](https://hijabf-ai4sdg-insights-app-ak34e9.streamlit.app/)
+
+To redeploy or fork:
+
+1. Push to GitHub (public).
+2. Open [share.streamlit.io](https://share.streamlit.io/) → **New app** → Main file: `app.py`.
+3. In **App settings → Secrets**, add:
 
 ```toml
 GEMINI_API_KEY = "your-actual-api-key"
 ```
-
-5. Save — the live URL will look like `https://<you>-ai4sdg-insights.streamlit.app`.
 
 World Bank charts work without a key. Only **AI Insight** needs `GEMINI_API_KEY`.
 
@@ -153,14 +158,12 @@ World Bank charts work without a key. Only **AI Insight** needs `GEMINI_API_KEY`
 
 ## Screenshots
 
-
 | View | Description |
 |------|-------------|
-| <img width="1421" height="862" alt="image" src="https://github.com/user-attachments/assets/580a1867-205d-42cd-a6ec-a77f80e264e7" /> | Main dashboard — KPI cards + trend chart (light mode) |
-| <img width="1296" height="688" alt="image" src="https://github.com/user-attachments/assets/5e4d6173-ca48-4e86-adc1-2b215411a6b5" /> | Pakistan / India / Bangladesh comparison |
-| <img width="1368" height="920" alt="image" src="https://github.com/user-attachments/assets/93c94136-3f97-4d63-850c-84ad6c7e918b" /> | Gemini policy brief panel |
-| <img width="1827" height="805" alt="image" src="https://github.com/user-attachments/assets/8dc930c9-ddd4-4001-bacc-5439e7257c96" /> | Dark mode theme |
-
+| <img width="1421" height="862" alt="Main dashboard" src="https://github.com/user-attachments/assets/580a1867-205d-42cd-a6ec-a77f80e264e7" /> | Main dashboard — KPI cards + trend chart (light mode) |
+| <img width="1296" height="688" alt="Country comparison" src="https://github.com/user-attachments/assets/5e4d6173-ca48-4e86-adc1-2b215411a6b5" /> | Pakistan / India / Bangladesh comparison |
+| <img width="1368" height="920" alt="AI policy brief" src="https://github.com/user-attachments/assets/93c94136-3f97-4d63-850c-84ad6c7e918b" /> | Gemini policy brief panel |
+| <img width="1827" height="805" alt="Dark mode" src="https://github.com/user-attachments/assets/8dc930c9-ddd4-4001-bacc-5439e7257c96" /> | Dark mode theme |
 
 ---
 
@@ -201,6 +204,7 @@ All time series are fetched from the [World Bank Open Data API](https://data.wor
 - UN-inspired blue & white palette with soft shadows and rounded cards
 - Business logic separated from UI (`data_loader`, `analytics`, `ai_insights`)
 - PEP 8-oriented modular Python; no notebook / Colab patterns
+- Polarity-aware trend labels (rising unemployment is a watch signal, not “improving”)
 
 ---
 
@@ -213,7 +217,6 @@ All time series are fetched from the [World Bank Open Data API](https://data.wor
 - Multilingual UI (EN / UR / BN / HI)
 - Official UNDP colour tokens and SDG icon assets
 - Unit tests and CI for data cleaning / analytics
-- Deploy to Streamlit Community Cloud or Hugging Face Spaces
 
 ---
 
@@ -221,4 +224,8 @@ All time series are fetched from the [World Bank Open Data API](https://data.wor
 
 AI4SDG Insights is an **educational / portfolio** application. It is **not** an official United Nations or UNDP product. AI-generated text is illustrative and must be validated against official statistics and national planning frameworks before any policy use.
 
+---
 
+## License
+
+MIT — feel free to adapt for learning and portfolio showcases.
